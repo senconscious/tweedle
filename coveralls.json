@@ -1,0 +1,14 @@
+{
+  "skip_files": [
+    "lib/tweedle.ex",
+    "lib/tweedle/repo.ex",
+    "lib/tweedle_web.ex",
+    "lib/tweedle_web/endpoint.ex",
+    "lib/tweedle_web/router.ex",
+    "test",
+    "lib/tweedle/application.ex",
+    "lib/tweedle_web/telemetry.ex",
+    "lib/tweedle_web/views/error_helpers.ex",
+    "lib/tweedle_web/views/error_view.ex"
+  ]
+}
