@@ -54,7 +54,8 @@ defmodule Tweedle.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
-      {:excoveralls, "~> 0.10", only: :test}
+      {:excoveralls, "~> 0.10", only: :test},
+      {:bcrypt_elixir, "~> 3.0"}
     ]
   end
 
