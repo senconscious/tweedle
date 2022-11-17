@@ -39,6 +39,18 @@ defmodule Tweedle.AccountsTest do
     end
   end
 
+  describe "get_user/1" do
+    setup :create_user
+
+    test "ok when user exists", %{user: %{id: user_id}} do
+      assert Accounts.get_user(user_id)
+    end
+
+    test "raise when user doesn't exist", %{user: %{id: user_id}} do
+      refute Accounts.get_user(user_id + 1)
+    end
+  end
+
   describe "update_user!/1" do
     setup :create_user
 
@@ -78,6 +90,47 @@ defmodule Tweedle.AccountsTest do
     end
   end
 
+  describe "sign_up!/1" do
+    test "OK valid attrs" do
+      assert {:ok, _token, _claims} = Accounts.sign_up!(@valid_attrs)
+    end
+
+    test "raise not valid attrs" do
+      assert_raise(InvalidChangesetError, fn -> Accounts.sign_up!(%{}) end)
+    end
+  end
+
+  describe "sign_in!/2" do
+    setup :create_user
+
+    test "OK success", %{user: %{email: email}} do
+      assert {:ok, _token, _claims} = Accounts.sign_in!(email, @valid_attrs.password)
+    end
+
+    test "Error not valid password", %{user: %{email: email}} do
+      assert {:error, "invalid password"} = Accounts.sign_in!(email, "not_valid_password")
+    end
+
+    test "raise user not found" do
+      assert_raise(NoResultsError, fn ->
+        Accounts.sign_in!("not_existing@mail.com", "some random password")
+      end)
+    end
+  end
+
+  describe "sign_out/1" do
+    setup :create_user
+    setup :sign_in_user
+
+    test "OK", %{token: token} do
+      assert {:ok, _claims} = Accounts.sign_out(token)
+    end
+
+    test "error invalid token" do
+      assert {:error, :not_found} = Accounts.sign_out("some invalid token")
+    end
+  end
+
   defp user_fixture!(attrs \\ %{}) do
     @valid_attrs
     |> Map.merge(attrs)
@@ -86,5 +139,10 @@ defmodule Tweedle.AccountsTest do
 
   defp create_user(_) do
     {:ok, user: user_fixture!()}
+  end
+
+  defp sign_in_user(%{user: %{email: email}}) do
+    {:ok, token, _claims} = Accounts.sign_in!(email, @valid_attrs.password)
+    {:ok, token: token}
   end
 end

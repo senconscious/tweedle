@@ -15,9 +15,10 @@ defmodule Tweedle.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: Tweedle.PubSub},
       # Start the Endpoint (http/https)
-      TweedleWeb.Endpoint
+      TweedleWeb.Endpoint,
       # Start a worker by calling: Tweedle.Worker.start_link(arg)
       # {Tweedle.Worker, arg}
+      {Guardian.DB.Token.SweeperServer, []}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
