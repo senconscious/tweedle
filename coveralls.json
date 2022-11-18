@@ -9,6 +9,7 @@
     "lib/tweedle/application.ex",
     "lib/tweedle_web/telemetry.ex",
     "lib/tweedle_web/views/error_helpers.ex",
-    "lib/tweedle_web/views/error_view.ex"
+    "lib/tweedle_web/views/error_view.ex",
+    "lib/tweedle/auth/guardian.ex"
   ]
 }

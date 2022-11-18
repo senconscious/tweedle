@@ -25,6 +25,16 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+config :tweedle, Tweedle.Auth.Guardian,
+  issuer: "tweedle",
+  secret_key: "oiL4QOWG9RWr1qJKJNvYZpHAK8lu/93Hj3CIZXRfbwbMFKGWjjiyi3L/tUbicEeh"
+
+config :guardian, Guardian.DB, repo: Tweedle.Repo
+
+config :tweedle, TweedleWeb.Pipelines.AuthorizedAccess,
+  module: Tweedle.Auth.Guardian,
+  error_handler: TweedleWeb.Helpers.AuthErrorHandler
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

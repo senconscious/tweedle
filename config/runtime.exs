@@ -62,4 +62,6 @@ if config_env() == :prod do
       port: port
     ],
     secret_key_base: secret_key_base
+
+  config :tweedle, Tweedle.Auth.Guardian, secret_key: System.fetch_env!("GUARDIAN_SECRET_KEY")
 end

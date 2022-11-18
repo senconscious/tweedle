@@ -105,7 +105,7 @@
           {Credo.Check.Readability.MaxLineLength, [priority: :low, max_length: 120]},
           {Credo.Check.Readability.ModuleAttributeNames, []},
           {Credo.Check.Readability.ModuleDoc,
-           [files: %{excluded: ["lib/tweedle_web/telemetry.ex"]}]},
+           [files: %{excluded: ["lib/tweedle_web/telemetry.ex", "test/support/fixtures"]}]},
           {Credo.Check.Readability.ModuleNames, []},
           {Credo.Check.Readability.ParenthesesInCondition, []},
           {Credo.Check.Readability.ParenthesesOnZeroArityDefs, []},
