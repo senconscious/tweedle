@@ -28,6 +28,18 @@ defmodule TweedleWeb.ConnCase do
 
       # The default endpoint for testing
       @endpoint TweedleWeb.Endpoint
+
+      def sign_in(%{authorized: true, conn: conn, email: email, password: password}) do
+        {:ok, token, _claims} = Tweedle.Accounts.sign_in!(email, password)
+
+        {:ok, conn: put_req_header(conn, "authorization", "Bearer #{token}")}
+      end
+
+      def sign_in(_), do: :ok
+
+      def sign_out(%{conn: conn}) do
+        {:ok, conn: Routes.accounts_token_path(conn, :sign_out)}
+      end
     end
   end
 

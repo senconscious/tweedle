@@ -31,6 +31,10 @@ config :tweedle, Tweedle.Auth.Guardian,
 
 config :guardian, Guardian.DB, repo: Tweedle.Repo
 
+config :tweedle, TweedleWeb.Pipelines.AuthorizedAccess,
+  module: Tweedle.Auth.Guardian,
+  error_handler: TweedleWeb.Helpers.AuthErrorHandler
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

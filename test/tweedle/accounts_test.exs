@@ -1,26 +1,20 @@
 defmodule Tweedle.AccountsTest do
   use Tweedle.DataCase
 
-  alias Tweedle.Accounts
   alias Ecto.{InvalidChangesetError, NoResultsError}
+  alias Tweedle.Accounts
+  alias Tweedle.Fixtures.AccountsFixtures
 
   @moduletag :accounts
 
-  @valid_attrs %{
-    email: "test@mail.com",
-    name: "Sample Name",
-    password: "password1234",
-    username: "sample_username"
-  }
-
   describe "create_user!/1" do
     test "OK when valid attrs" do
-      assert Accounts.create_user!(@valid_attrs)
+      assert Accounts.create_user!(AccountsFixtures.valid_user_attrs())
     end
 
     test "raise when missing password" do
       assert_raise(InvalidChangesetError, fn ->
-        user_fixture!(%{password: nil})
+        AccountsFixtures.user_fixture!(%{password: nil})
       end)
     end
   end
@@ -60,7 +54,8 @@ defmodule Tweedle.AccountsTest do
     end
 
     test "raise when duplicate email", %{user: %{email: email}} do
-      user = user_fixture!(%{email: "second@mail.com", username: "second_username"})
+      user =
+        AccountsFixtures.user_fixture!(%{email: "second@mail.com", username: "second_username"})
 
       assert_raise(InvalidChangesetError, fn ->
         Accounts.update_user!(user, %{email: email})
@@ -84,7 +79,7 @@ defmodule Tweedle.AccountsTest do
     end
 
     test "OK one record" do
-      user = user_fixture!()
+      user = AccountsFixtures.user_fixture!()
 
       assert [^user] = Accounts.list_users()
     end
@@ -92,7 +87,7 @@ defmodule Tweedle.AccountsTest do
 
   describe "sign_up!/1" do
     test "OK valid attrs" do
-      assert {:ok, _token, _claims} = Accounts.sign_up!(@valid_attrs)
+      assert {:ok, _token, _claims} = Accounts.sign_up!(AccountsFixtures.valid_user_attrs())
     end
 
     test "raise not valid attrs" do
@@ -104,7 +99,8 @@ defmodule Tweedle.AccountsTest do
     setup :create_user
 
     test "OK success", %{user: %{email: email}} do
-      assert {:ok, _token, _claims} = Accounts.sign_in!(email, @valid_attrs.password)
+      %{password: password} = AccountsFixtures.valid_user_attrs()
+      assert {:ok, _token, _claims} = Accounts.sign_in!(email, password)
     end
 
     test "Error not valid password", %{user: %{email: email}} do
@@ -131,18 +127,13 @@ defmodule Tweedle.AccountsTest do
     end
   end
 
-  defp user_fixture!(attrs \\ %{}) do
-    @valid_attrs
-    |> Map.merge(attrs)
-    |> Accounts.create_user!()
-  end
-
   defp create_user(_) do
-    {:ok, user: user_fixture!()}
+    {:ok, user: AccountsFixtures.user_fixture!()}
   end
 
   defp sign_in_user(%{user: %{email: email}}) do
-    {:ok, token, _claims} = Accounts.sign_in!(email, @valid_attrs.password)
+    %{password: password} = AccountsFixtures.valid_user_attrs()
+    {:ok, token, _claims} = Accounts.sign_in!(email, password)
     {:ok, token: token}
   end
 end
