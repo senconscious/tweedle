@@ -1,4 +1,7 @@
 defmodule TweedleWeb.Helpers.AuthErrorHandler do
+  @moduledoc """
+    Handler for Guardian auth errors
+  """
   import Plug.Conn
 
   @behaviour Guardian.Plug.ErrorHandler
