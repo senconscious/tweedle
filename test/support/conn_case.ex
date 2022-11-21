@@ -40,6 +40,15 @@ defmodule TweedleWeb.ConnCase do
       def sign_out(%{conn: conn}) do
         {:ok, conn: Routes.accounts_token_path(conn, :sign_out)}
       end
+
+      def authorize_conn(%{conn: conn}) do
+        %{email: email, password: password} = attrs = Tweedle.AccountsFixtures.valid_user_attrs()
+
+        %{id: user_id} = Tweedle.Accounts.create_user!(attrs)
+        {:ok, token, _claims} = Tweedle.Accounts.sign_in!(email, password)
+
+        {:ok, conn: put_req_header(conn, "authorization", "Bearer #{token}"), user_id: user_id}
+      end
     end
   end
 

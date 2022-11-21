@@ -21,5 +21,14 @@ defmodule TweedleWeb.Router do
       pipe_through :ensure_authorized_access
       post "/sign_out", TokenController, :sign_out
     end
+
+    get "/tweeds", TweedController, :index
+
+    scope "/user", User, as: :user do
+      pipe_through :ensure_authorized_access
+
+      resources "/tweeds", TweedController, only: [:create, :delete]
+      patch "/tweeds/:id", TweedController, :update
+    end
   end
 end
