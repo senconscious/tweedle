@@ -3,7 +3,7 @@ defmodule Tweedle.AccountsTest do
 
   alias Ecto.{InvalidChangesetError, NoResultsError}
   alias Tweedle.Accounts
-  alias Tweedle.Fixtures.AccountsFixtures
+  alias Tweedle.AccountsFixtures
 
   @moduletag :accounts
 

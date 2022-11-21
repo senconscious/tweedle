@@ -57,7 +57,8 @@ defmodule Tweedle.MixProject do
       {:excoveralls, "~> 0.10", only: :test},
       {:bcrypt_elixir, "~> 3.0"},
       {:guardian, "~> 2.0"},
-      {:guardian_db, "~> 2.0"}
+      {:guardian_db, "~> 2.0"},
+      {:ecto_juno, "~> 0.3.0"}
     ]
   end
 
@@ -73,7 +74,7 @@ defmodule Tweedle.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test --cover"],
-      check: ["format", "dialyzer", "test"]
+      check: ["format", "dialyzer", "credo --strict", "test"]
     ]
   end
 end

@@ -6,12 +6,16 @@ defmodule Tweedle.Accounts.User do
 
   import Ecto.Changeset
 
+  alias Tweedle.Tweeds.Tweed
+
   schema "users" do
     field :email, :string
     field :name, :string
     field :password_hash, :string
     field :password, :string, virtual: true
     field :username, :string
+
+    has_many :tweeds, Tweed, foreign_key: :author_id
 
     timestamps()
   end

@@ -1,4 +1,4 @@
-defmodule Tweedle.Fixtures.AccountsFixtures do
+defmodule Tweedle.AccountsFixtures do
   alias Tweedle.Accounts
 
   def valid_user_attrs do

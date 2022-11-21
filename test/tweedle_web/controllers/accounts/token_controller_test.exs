@@ -1,7 +1,7 @@
 defmodule TweedleWeb.Accounts.TokenControllerTest do
   use TweedleWeb.ConnCase
 
-  alias Tweedle.Fixtures.AccountsFixtures
+  alias Tweedle.AccountsFixtures
 
   @moduletag :accounts_token_controller
 
