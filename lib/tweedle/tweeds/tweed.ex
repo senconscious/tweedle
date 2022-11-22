@@ -8,9 +8,14 @@ defmodule Tweedle.Tweeds.Tweed do
   import Ecto.Changeset
 
   alias Tweedle.Accounts.User
+  alias Tweedle.Tweeds.Like
 
   schema "tweeds" do
     belongs_to :author, User
+
+    has_many :likes, Like
+
+    many_to_many :liked_users, User, join_through: Like
 
     field :message, :string
 

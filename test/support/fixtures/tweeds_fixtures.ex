@@ -18,4 +18,12 @@ defmodule Tweedle.TweedsFixtures do
     |> Map.merge(attrs)
     |> then(fn attrs -> %{tweed: attrs} end)
   end
+
+  def like_standalone_fixture(attrs \\ %{}) do
+    attrs
+    |> tweed_fixture()
+    |> then(fn %{id: tweed_id, author_id: user_id} ->
+      Tweeds.create_like!(tweed_id, user_id)
+    end)
+  end
 end

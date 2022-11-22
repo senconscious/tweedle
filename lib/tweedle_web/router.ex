@@ -23,12 +23,18 @@ defmodule TweedleWeb.Router do
     end
 
     get "/tweeds", TweedController, :index
+    get "/tweeds/:id", TweedController, :show
 
     scope "/user", User, as: :user do
       pipe_through :ensure_authorized_access
 
-      resources "/tweeds", TweedController, only: [:create, :delete]
+      resources "/tweeds", TweedController, only: [:create, :delete] do
+        resources "/likes", LikeController, only: [:create, :delete], singleton: true
+      end
+
       patch "/tweeds/:id", TweedController, :update
+
+      get "/likes", LikeController, :index
     end
   end
 end
