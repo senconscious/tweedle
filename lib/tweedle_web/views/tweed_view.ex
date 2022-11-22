@@ -3,7 +3,18 @@ defmodule TweedleWeb.TweedView do
 
   def render("index.json", %{tweeds: tweeds}) do
     %{
-      data: render_many(tweeds, __MODULE__, "tweed.json")
+      data: render_many(tweeds, __MODULE__, "tweed_with_counted_likes.json")
+    }
+  end
+
+  def render("tweed_with_counted_likes.json", %{tweed: tweed}) do
+    %{
+      id: tweed.id,
+      message: tweed.message,
+      author_id: tweed.author_id,
+      likes: tweed.likes,
+      inserted_at: tweed.inserted_at,
+      updated_at: tweed.updated_at
     }
   end
 

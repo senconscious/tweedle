@@ -21,6 +21,27 @@ defmodule TweedleWeb.TweedControllerTest do
 
       assert %{"data" => data} = json_response(conn, 200)
       assert Enum.count(data) == 2
+
+      Enum.each(data, fn element ->
+        assert %{
+                 "likes" => 0,
+                 "author_id" => _,
+                 "message" => _,
+                 "inserted_at" => _,
+                 "updated_at" => _
+               } = element
+      end)
+    end
+
+    test "200 OK one tweed with 1 like", %{conn: conn, path: path} do
+      %{id: author_id} = AccountsFixtures.user_fixture!()
+      TweedsFixtures.like_standalone_fixture(%{author_id: author_id})
+
+      conn = get(conn, path)
+
+      assert %{"data" => [data | []]} = json_response(conn, 200)
+
+      assert %{"likes" => 1} = data
     end
   end
 

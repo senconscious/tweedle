@@ -23,7 +23,10 @@ defmodule Tweedle.Tweeds do
 
   def list_tweeds do
     Tweed
+    |> join(:left, [t], l in assoc(t, :likes))
+    |> group_by([t], t.id)
     |> Sorting.sort_query(Tweed, %{sort_direction: "desc"})
+    |> select([t, l], %{t | likes: count(l.inserted_at)})
     |> Repo.all()
   end
 

@@ -76,7 +76,7 @@ defmodule TweedleWeb.User.LikeControllerTest do
       assert %{"data" => data} = json_response(conn, 200)
       assert Enum.count(data) == 2
 
-      Enum.map(data, fn element ->
+      Enum.each(data, fn element ->
         assert %{"inserted_at" => _, "tweed" => _} = element
       end)
     end
