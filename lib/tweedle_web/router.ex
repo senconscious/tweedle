@@ -23,6 +23,7 @@ defmodule TweedleWeb.Router do
     end
 
     get "/tweeds", TweedController, :index
+    get "/tweeds/:id", TweedController, :show
 
     scope "/user", User, as: :user do
       pipe_through :ensure_authorized_access

@@ -7,6 +7,12 @@ defmodule TweedleWeb.TweedView do
     }
   end
 
+  def render("show.json", %{tweed: tweed}) do
+    %{
+      data: render_one(tweed, __MODULE__, "tweed_with_counted_likes.json")
+    }
+  end
+
   def render("tweed_with_counted_likes.json", %{tweed: tweed}) do
     %{
       id: tweed.id,
