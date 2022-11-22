@@ -8,13 +8,18 @@ defmodule TweedleWeb.User.LikeController do
     apply(__MODULE__, action_name(conn), args)
   end
 
-  def create(conn, %{"tweed_id" => tweed_id}, account_id) do
-    like = Tweeds.create_like!(tweed_id, account_id)
+  def index(conn, _params, user_id) do
+    likes = Tweeds.list_likes(user_id)
+    render(conn, "index.json", likes: likes)
+  end
+
+  def create(conn, %{"tweed_id" => tweed_id}, user_id) do
+    like = Tweeds.create_like!(tweed_id, user_id)
     render(conn, "show.json", like: like)
   end
 
-  def delete(conn, %{"tweed_id" => tweed_id}, account_id) do
-    like = Tweeds.delete_like!(tweed_id, account_id)
+  def delete(conn, %{"tweed_id" => tweed_id}, user_id) do
+    like = Tweeds.delete_like!(tweed_id, user_id)
     render(conn, "show.json", like: like)
   end
 end

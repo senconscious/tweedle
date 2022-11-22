@@ -32,6 +32,8 @@ defmodule TweedleWeb.Router do
       end
 
       patch "/tweeds/:id", TweedController, :update
+
+      get "/likes", LikeController, :index
     end
   end
 end

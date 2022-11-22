@@ -3,6 +3,8 @@ defmodule Tweedle.Tweeds do
     Tweeds context
   """
 
+  import Ecto.Query
+
   alias EctoJuno.Query.Sorting
   alias Tweedle.Repo
   alias Tweedle.Tweeds.{Like, Tweed}
@@ -45,6 +47,14 @@ defmodule Tweedle.Tweeds do
     id
     |> get_tweed!()
     |> delete_tweed!()
+  end
+
+  def list_likes(user_id) do
+    Like
+    |> where([l], l.user_id == ^user_id)
+    |> preload([:tweed])
+    |> Sorting.sort_query(Like, %{sort_direction: "desc"})
+    |> Repo.all()
   end
 
   def get_like!(tweed_id, user_id), do: Repo.get_by!(Like, tweed_id: tweed_id, user_id: user_id)
