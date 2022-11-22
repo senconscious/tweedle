@@ -2,11 +2,12 @@ defmodule Tweedle.Accounts.User do
   @moduledoc """
     Schema for user
   """
+
   use Ecto.Schema
 
   import Ecto.Changeset
 
-  alias Tweedle.Tweeds.Tweed
+  alias Tweedle.Tweeds.{Like, Tweed}
 
   schema "users" do
     field :email, :string
@@ -15,7 +16,10 @@ defmodule Tweedle.Accounts.User do
     field :password, :string, virtual: true
     field :username, :string
 
+    has_many :likes, Like
     has_many :tweeds, Tweed, foreign_key: :author_id
+
+    many_to_many :liked_tweeds, Tweed, join_through: Like
 
     timestamps()
   end

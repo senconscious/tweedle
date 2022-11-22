@@ -5,7 +5,7 @@ defmodule Tweedle.Tweeds do
 
   alias EctoJuno.Query.Sorting
   alias Tweedle.Repo
-  alias Tweedle.Tweeds.Tweed
+  alias Tweedle.Tweeds.{Like, Tweed}
 
   def create_tweed!(author_id, params) do
     params
@@ -45,5 +45,19 @@ defmodule Tweedle.Tweeds do
     id
     |> get_tweed!()
     |> delete_tweed!()
+  end
+
+  def get_like!(tweed_id, user_id), do: Repo.get_by!(Like, tweed_id: tweed_id, user_id: user_id)
+
+  def create_like!(tweed_id, user_id) do
+    %Like{}
+    |> Like.changeset(%{tweed_id: tweed_id, user_id: user_id})
+    |> Repo.insert!()
+  end
+
+  def delete_like!(tweed_id, user_id) do
+    tweed_id
+    |> get_like!(user_id)
+    |> Repo.delete!()
   end
 end
