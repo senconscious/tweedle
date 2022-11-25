@@ -1,6 +1,8 @@
 defmodule TweedleWeb.User.TweedControllerTest do
   use TweedleWeb.ConnCase
 
+  import Tweedle.TweedsSetups, only: [create_tweed: 1]
+
   alias Tweedle.TweedsFixtures
 
   @moduletag :user_tweed_controller
@@ -8,7 +10,7 @@ defmodule TweedleWeb.User.TweedControllerTest do
   setup :authorize_conn
 
   describe "POST /tweeds" do
-    setup :create_tweed_path
+    setup :create_path
 
     test "200 OK valid attrs", %{conn: conn, path: path} do
       attrs = TweedsFixtures.tweed_payload()
@@ -38,7 +40,7 @@ defmodule TweedleWeb.User.TweedControllerTest do
 
   describe "PATCH /tweeds/:id" do
     setup :create_tweed
-    setup :update_tweed_path
+    setup :update_path
 
     test "200 OK", %{conn: conn, path: path} do
       message = "UPDATED MESSAGE"
@@ -51,7 +53,7 @@ defmodule TweedleWeb.User.TweedControllerTest do
     test "404 ERROR tweed not exists", %{conn: conn, tweed_id: tweed_id} do
       message = "UPDATED MESSAGE"
       attrs = TweedsFixtures.tweed_payload(%{message: message})
-      {:ok, path: path} = path_fixture(conn, :update, tweed_id + 1)
+      path = path_fixture(conn, :update, tweed_id + 1)
 
       assert_error_sent(404, fn ->
         patch(conn, path, attrs)
@@ -61,7 +63,7 @@ defmodule TweedleWeb.User.TweedControllerTest do
 
   describe "DELETE /tweeds/:id" do
     setup :create_tweed
-    setup :delete_tweed_path
+    setup :delete_path
 
     test "200 OK", %{conn: conn, path: path, tweed_id: tweed_id} do
       conn = delete(conn, path)
@@ -69,7 +71,7 @@ defmodule TweedleWeb.User.TweedControllerTest do
     end
 
     test "404 ERROR tweed not exists", %{conn: conn, tweed_id: tweed_id} do
-      {:ok, path: path} = path_fixture(conn, :delete, tweed_id + 1)
+      path = path_fixture(conn, :delete, tweed_id + 1)
 
       assert_error_sent(404, fn ->
         delete(conn, path)
@@ -77,24 +79,24 @@ defmodule TweedleWeb.User.TweedControllerTest do
     end
   end
 
-  defp create_tweed_path(%{conn: conn}) do
-    path_fixture(conn, :create)
+  defp create_path(%{conn: conn}) do
+    {:ok, path: path_fixture(conn, :create)}
   end
 
-  defp update_tweed_path(%{conn: conn, tweed_id: id}) do
-    path_fixture(conn, :update, id)
+  defp update_path(%{conn: conn, tweed_id: id}) do
+    {:ok, path: path_fixture(conn, :update, id)}
   end
 
-  defp delete_tweed_path(%{conn: conn, tweed_id: id}) do
-    path_fixture(conn, :delete, id)
+  defp delete_path(%{conn: conn, tweed_id: id}) do
+    {:ok, path: path_fixture(conn, :delete, id)}
   end
 
   defp path_fixture(conn, action) do
-    {:ok, path: Routes.user_tweed_path(conn, action)}
+    Routes.user_tweed_path(conn, action)
   end
 
   defp path_fixture(conn, action, id) do
-    {:ok, path: Routes.user_tweed_path(conn, action, id)}
+    Routes.user_tweed_path(conn, action, id)
   end
 
   defp generate_string(length) do
@@ -102,11 +104,5 @@ defmodule TweedleWeb.User.TweedControllerTest do
       acc ->
         "#{acc}a"
     end
-  end
-
-  defp create_tweed(%{user_id: author_id}) do
-    %{id: tweed_id} = TweedsFixtures.tweed_fixture(%{author_id: author_id})
-
-    {:ok, tweed_id: tweed_id}
   end
 end

@@ -1,21 +1,23 @@
 defmodule TweedleWeb.TweedControllerTest do
   use TweedleWeb.ConnCase
 
-  alias Tweedle.{AccountsFixtures, Tweeds, TweedsFixtures}
+  import Tweedle.TweedsSetups
+
+  alias Tweedle.{AccountsFixtures, TweedsFixtures}
 
   @moduletag :tweed_controller
 
   describe "GET /tweeds" do
-    setup :index_tweeds_path
-    setup :create_tweeds
+    setup :index_path
+    setup :create_standalone_tweeds
 
+    @tag :skip_create_standalone_tweeds
     test "200 OK no data", %{conn: conn, path: path} do
       conn = get(conn, path)
 
       assert %{"data" => []} = json_response(conn, 200)
     end
 
-    @tag :create_tweeds
     test "200 OK", %{conn: conn, path: path} do
       conn = get(conn, path)
 
@@ -33,6 +35,7 @@ defmodule TweedleWeb.TweedControllerTest do
       end)
     end
 
+    @tag :skip_create_standalone_tweeds
     test "200 OK one tweed with 1 like", %{conn: conn, path: path} do
       %{id: author_id} = AccountsFixtures.user_fixture!()
       TweedsFixtures.like_standalone_fixture(%{author_id: author_id})
@@ -45,62 +48,58 @@ defmodule TweedleWeb.TweedControllerTest do
     end
   end
 
-  describe "GET /tweed/:id" do
-    setup :create_tweed
+  describe "GET /tweeds/:id (likes)" do
+    setup :create_standalone_tweed
     setup :create_like
-    setup :show_tweed_path
+    setup :show_path
 
+    @tag :skip_create_like
     test "200 OK tweed with no likes", %{conn: conn, path: path} do
       conn = get(conn, path)
 
-      assert %{"data" => data} = json_response(conn, 200)
-      assert %{"likes" => 0} = data
+      assert %{"data" => %{"likes" => 0}} = json_response(conn, 200)
     end
 
-    @tag :create_like
     test "200 OK tweed with 1 like", %{conn: conn, path: path} do
       conn = get(conn, path)
 
-      assert %{"data" => data} = json_response(conn, 200)
-      assert %{"likes" => 1} = data
+      assert %{"data" => %{"likes" => 1}} = json_response(conn, 200)
     end
   end
 
-  defp index_tweeds_path(%{conn: conn}) do
-    path_fixture(conn, :index)
+  describe "GET /tweeds/:id (replies)" do
+    setup :create_standalone_tweed
+    setup :create_reply
+    setup :show_path
+
+    @tag :skip_create_reply
+    test "200 OK tweed with no replies", %{conn: conn, path: path} do
+      conn = get(conn, path)
+
+      assert %{"data" => %{"replies" => []}} = json_response(conn, 200)
+    end
+
+    test "200 OK tweed with 1 reply", %{conn: conn, path: path} do
+      conn = get(conn, path)
+
+      assert %{"data" => %{"replies" => replies}} = json_response(conn, 200)
+      refute replies == []
+    end
   end
 
-  defp show_tweed_path(%{conn: conn, tweed_id: tweed_id}) do
-    path_fixture(conn, :show, tweed_id)
+  defp index_path(%{conn: conn}) do
+    {:ok, path: path_fixture(conn, :index)}
+  end
+
+  defp show_path(%{conn: conn, tweed_id: tweed_id}) do
+    {:ok, path: path_fixture(conn, :show, tweed_id)}
   end
 
   defp path_fixture(conn, action) do
-    {:ok, path: Routes.tweed_path(conn, action)}
+    Routes.tweed_path(conn, action)
   end
 
   defp path_fixture(conn, action, tweed_id) do
-    {:ok, path: Routes.tweed_path(conn, action, tweed_id)}
+    Routes.tweed_path(conn, action, tweed_id)
   end
-
-  defp create_tweeds(%{create_tweeds: true}) do
-    %{id: author_id} = AccountsFixtures.user_fixture!()
-    tweeds = for _n <- 1..2, do: TweedsFixtures.tweed_fixture(%{author_id: author_id})
-
-    {:ok, tweeds: tweeds}
-  end
-
-  defp create_tweeds(_), do: :ok
-
-  defp create_tweed(_) do
-    %{id: author_id} = AccountsFixtures.user_fixture!()
-    %{id: tweed_id} = TweedsFixtures.tweed_fixture(%{author_id: author_id})
-    {:ok, tweed_id: tweed_id, user_id: author_id}
-  end
-
-  defp create_like(%{create_like: true, tweed_id: tweed_id, user_id: user_id}) do
-    Tweeds.create_like!(tweed_id, user_id)
-    :ok
-  end
-
-  defp create_like(_), do: :ok
 end

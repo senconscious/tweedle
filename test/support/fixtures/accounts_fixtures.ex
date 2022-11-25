@@ -15,4 +15,16 @@ defmodule Tweedle.AccountsFixtures do
     |> Map.merge(attrs)
     |> Accounts.create_user!()
   end
+
+  def sign_in_payload(email, password) do
+    %{user: %{email: email, password: password}}
+  end
+
+  def sign_up_payload(attrs \\ %{}) do
+    valid_user_attrs()
+    |> Map.merge(attrs)
+    |> then(fn attrs ->
+      %{user: attrs}
+    end)
+  end
 end

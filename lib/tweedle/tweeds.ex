@@ -25,7 +25,7 @@ defmodule Tweedle.Tweeds do
     query = subquery(tweed_likes_query())
 
     Tweed
-    |> join(:inner, [t], tl in subquery(query), on: t.id == tl.tweed_id)
+    |> join(:inner, [t], tl in subquery(query), on: t.id == tl.tweed_id and is_nil(t.parent_id))
     |> Sorting.sort_query(Tweed, %{sort_direction: "desc"})
     |> select([t, tl], %{t | likes: tl.like_count})
     |> Repo.all()
@@ -38,6 +38,7 @@ defmodule Tweedle.Tweeds do
     |> where([t], t.id == ^id)
     |> join(:inner, [t], tl in subquery(query), on: t.id == tl.tweed_id)
     |> select([t, tl], %{t | likes: tl.like_count})
+    |> preload([:replies])
     |> Repo.one!()
   end
 
@@ -88,5 +89,17 @@ defmodule Tweedle.Tweeds do
     tweed_id
     |> get_like!(user_id)
     |> Repo.delete!()
+  end
+
+  def create_reply!(author_id, parent_id, attrs) do
+    attrs
+    |> Map.merge(%{"author_id" => author_id, "parent_id" => parent_id})
+    |> create_reply!()
+  end
+
+  def create_reply!(attrs) do
+    %Tweed{}
+    |> Tweed.reply_changeset(attrs)
+    |> Repo.insert!()
   end
 end

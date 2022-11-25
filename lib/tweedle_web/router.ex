@@ -22,19 +22,21 @@ defmodule TweedleWeb.Router do
       post "/sign_out", TokenController, :sign_out
     end
 
-    get "/tweeds", TweedController, :index
-    get "/tweeds/:id", TweedController, :show
+    resources "/tweeds", TweedController, only: [:index, :show]
 
     scope "/user", User, as: :user do
       pipe_through :ensure_authorized_access
 
       resources "/tweeds", TweedController, only: [:create, :delete] do
         resources "/likes", LikeController, only: [:create, :delete], singleton: true
+        post "/replies", ReplyController, :create
       end
 
       patch "/tweeds/:id", TweedController, :update
 
       get "/likes", LikeController, :index
+
+      resources "/replies", ReplyController, only: [:update, :delete]
     end
   end
 end
