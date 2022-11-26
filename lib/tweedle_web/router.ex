@@ -39,7 +39,7 @@ defmodule TweedleWeb.Router do
 
       get "/followed_tweeds", TweedController, :index_followed
 
-      get "/likes", LikeController, :index
+      get "/liked_tweeds", TweedController, :index_liked
 
       resources "/replies", ReplyController, only: [:update, :delete]
 

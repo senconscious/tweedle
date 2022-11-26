@@ -1,7 +1,7 @@
 defmodule TweedleWeb.User.TweedControllerTest do
   use TweedleWeb.ConnCase
 
-  import Tweedle.TweedsSetups, only: [create_tweed: 1, create_author_tweed: 1]
+  import Tweedle.TweedsSetups, only: [create_tweed: 1, create_author_tweed: 1, create_like: 1]
   import Tweedle.AccountsSetups, only: [create_author: 1, create_follow: 1]
 
   alias Tweedle.TweedsFixtures
@@ -115,8 +115,33 @@ defmodule TweedleWeb.User.TweedControllerTest do
     end
   end
 
+  describe "GET /liked_tweeds" do
+    setup :index_liked_path
+    setup :create_tweed
+    setup :create_like
+
+    @tag :skip_create_like
+    test "200 OK no liked tweeds", %{conn: conn, path: path} do
+      conn = get(conn, path)
+
+      assert %{"data" => []} = json_response(conn, 200)
+    end
+
+    test "200 OK one liked tweed", %{conn: conn, path: path, tweed_id: tweed_id} do
+      conn = get(conn, path)
+
+      assert %{"data" => data} = json_response(conn, 200)
+      refute data == []
+      assert [%{"id" => ^tweed_id} | []] = data
+    end
+  end
+
   defp index_followed_path(%{conn: conn}) do
     {:ok, path: path_fixture(conn, :index_followed)}
+  end
+
+  defp index_liked_path(%{conn: conn}) do
+    {:ok, path: path_fixture(conn, :index_liked)}
   end
 
   defp create_path(%{conn: conn}) do

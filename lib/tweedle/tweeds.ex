@@ -23,21 +23,27 @@ defmodule Tweedle.Tweeds do
   end
 
   def list_tweeds do
-    query = subquery(tweed_likes_query())
-
-    Tweed
-    |> join(:inner, [t], tl in subquery(query), on: t.id == tl.tweed_id and is_nil(t.parent_id))
+    tweeds_with_like_count_query()
     |> Sorting.sort_query(Tweed, %{sort_direction: "desc"})
-    |> select([t, tl], %{t | likes: tl.like_count})
+    |> select_tweeds_with_like_count()
+    |> Repo.all()
+  end
+
+  def list_liked_tweeds(user_id) do
+    tweeds_with_like_count_query()
+    |> join(:inner, [t], l in Like, on: l.tweed_id == t.id and l.user_id == ^user_id, as: :likes)
+    |> Sorting.sort_query(Like, %{sort_direction: "desc"}, :likes)
+    |> select_tweeds_with_like_count()
     |> Repo.all()
   end
 
   def list_followed_tweeds(follower_id) do
-    Tweed
+    tweeds_with_like_count_query()
     |> join(:inner, [t], f in Follow,
       on: t.author_id == f.author_id and f.follower_id == ^follower_id
     )
     |> Sorting.sort_query(Tweed, %{sort_direction: "desc"})
+    |> select_tweeds_with_like_count()
     |> Repo.all()
   end
 
@@ -79,12 +85,14 @@ defmodule Tweedle.Tweeds do
     |> select([t, l], %{tweed_id: t.id, like_count: count(l.inserted_at)})
   end
 
-  def list_likes(user_id) do
-    Like
-    |> where([l], l.user_id == ^user_id)
-    |> preload([:tweed])
-    |> Sorting.sort_query(Like, %{sort_direction: "desc"})
-    |> Repo.all()
+  defp tweeds_with_like_count_query do
+    query = subquery(tweed_likes_query())
+
+    join(Tweed, :inner, [t], tl in subquery(query), on: t.id == tl.tweed_id)
+  end
+
+  defp select_tweeds_with_like_count(query) do
+    select(query, [t, tl], %{t | likes: tl.like_count})
   end
 
   def get_like!(tweed_id, user_id), do: Repo.get_by!(Like, tweed_id: tweed_id, user_id: user_id)

@@ -1,9 +1,12 @@
 defmodule TweedleWeb.User.TweedView do
   use TweedleWeb, :view
 
-  def render("index_followed.json", %{tweeds: tweeds}) do
+  alias TweedleWeb.TweedView
+
+  def render(template, %{tweeds: tweeds})
+      when template in ["index_followed.json", "index_liked.json"] do
     %{
-      data: render_many(tweeds, __MODULE__, "tweed_followed.json")
+      data: render_many(tweeds, TweedView, "tweed_with_likes.json")
     }
   end
 
@@ -15,9 +18,7 @@ defmodule TweedleWeb.User.TweedView do
 
   def render("delete.json", %{tweed: tweed}) do
     %{
-      data: %{
-        id: tweed.id
-      }
+      data: render_one(tweed, __MODULE__, "tweed_short.json")
     }
   end
 
@@ -31,14 +32,9 @@ defmodule TweedleWeb.User.TweedView do
     }
   end
 
-  def render("tweed_followed.json", %{tweed: tweed}) do
+  def render("tweed_short.json", %{tweed: tweed}) do
     %{
-      id: tweed.id,
-      parent_id: tweed.parent_id,
-      author_id: tweed.author_id,
-      message: tweed.message,
-      inserted_at: tweed.inserted_at,
-      updated_at: tweed.updated_at
+      id: tweed.id
     }
   end
 end

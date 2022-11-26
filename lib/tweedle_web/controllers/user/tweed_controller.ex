@@ -13,6 +13,11 @@ defmodule TweedleWeb.User.TweedController do
     render(conn, "index_followed.json", tweeds: tweeds)
   end
 
+  def index_liked(conn, _params, user_id) do
+    tweeds = Tweeds.list_liked_tweeds(user_id)
+    render(conn, "index_liked.json", tweeds: tweeds)
+  end
+
   def create(conn, %{"tweed" => params}, user_id) do
     tweed = Tweeds.create_tweed!(user_id, params)
     render(conn, "show.json", tweed: tweed)
