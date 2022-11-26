@@ -2,11 +2,13 @@ defmodule Tweedle.AccountsFixtures do
   alias Tweedle.Accounts
 
   def valid_user_attrs do
+    random_key = System.unique_integer([:positive, :monotonic])
+
     %{
-      email: "test@mail.com",
-      name: "Sample Name",
-      password: "password1234",
-      username: "sample_username"
+      email: "test_user#{random_key}@mail.com",
+      name: "Sample Name #{random_key}",
+      password: "passworD1234",
+      username: "sample_username_#{random_key}"
     }
   end
 

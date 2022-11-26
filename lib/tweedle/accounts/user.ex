@@ -7,6 +7,7 @@ defmodule Tweedle.Accounts.User do
 
   import Ecto.Changeset
 
+  alias Tweedle.Accounts.Follow
   alias Tweedle.Tweeds.{Like, Tweed}
 
   schema "users" do
@@ -18,6 +19,14 @@ defmodule Tweedle.Accounts.User do
 
     has_many :likes, Like
     has_many :tweeds, Tweed, foreign_key: :author_id
+
+    many_to_many :follows, __MODULE__,
+      join_through: Follow,
+      join_keys: [author_id: :id, follower_id: :id]
+
+    many_to_many :followers, __MODULE__,
+      join_through: Follow,
+      join_keys: [follower_id: :id, author_id: :id]
 
     many_to_many :liked_tweeds, Tweed, join_through: Like
 

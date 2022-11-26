@@ -19,10 +19,13 @@ defmodule TweedleWeb.Router do
       post "/sign_in", TokenController, :sign_in
 
       pipe_through :ensure_authorized_access
+
       post "/sign_out", TokenController, :sign_out
+      get "/profile", UserController, :show
     end
 
     resources "/tweeds", TweedController, only: [:index, :show]
+    resources "/profiles", ProfileController, only: [:index, :show]
 
     scope "/user", User, as: :user do
       pipe_through :ensure_authorized_access
@@ -34,9 +37,17 @@ defmodule TweedleWeb.Router do
 
       patch "/tweeds/:id", TweedController, :update
 
-      get "/likes", LikeController, :index
+      get "/followed_tweeds", TweedController, :index_followed
+
+      get "/liked_tweeds", TweedController, :index_liked
 
       resources "/replies", ReplyController, only: [:update, :delete]
+
+      resources "/profiles/:profile_id/follows", FollowController,
+        only: [:create, :delete],
+        singleton: true
+
+      get "/followed_profiles", ProfileController, :index_followed
     end
   end
 end
