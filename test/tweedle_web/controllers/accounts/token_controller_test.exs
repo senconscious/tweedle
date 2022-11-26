@@ -18,9 +18,9 @@ defmodule TweedleWeb.Accounts.TokenControllerTest do
       assert %{"data" => %{"token" => _}} = json_response(conn, 200)
     end
 
-    test "422 ERROR email already occupied", %{conn: conn, path: path} do
+    test "422 ERROR email already occupied", %{conn: conn, path: path, email: email} do
       assert_error_sent(422, fn ->
-        post(conn, path, AccountsFixtures.sign_up_payload(%{username: "second_sample_username"}))
+        post(conn, path, AccountsFixtures.sign_up_payload(%{email: email}))
       end)
     end
   end

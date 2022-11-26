@@ -3,7 +3,10 @@ defmodule Tweedle.Accounts do
     Accounts context
   """
 
-  alias Tweedle.Accounts.User
+  import Ecto.Query
+
+  alias EctoJuno.Query.Sorting
+  alias Tweedle.Accounts.{Follow, User}
   alias Tweedle.Auth.Guardian
   alias Tweedle.Repo
 
@@ -14,6 +17,16 @@ defmodule Tweedle.Accounts do
   end
 
   def list_users, do: Repo.all(User)
+
+  def list_followed_users(follower_id) do
+    User
+    |> join(:inner, [a], f in Follow,
+      on: a.id == f.author_id and f.follower_id == ^follower_id,
+      as: :follows
+    )
+    |> Sorting.sort_query(Follow, %{sort_direction: "desc"}, :follows)
+    |> Repo.all()
+  end
 
   def get_user!(id), do: Repo.get!(User, id)
 
@@ -52,5 +65,20 @@ defmodule Tweedle.Accounts do
   @spec sign_out(binary()) :: {:ok, map()} | {:error, any()}
   def sign_out(token) do
     Guardian.revoke(token)
+  end
+
+  def get_follow!(author_id, follower_id),
+    do: Repo.get_by!(Follow, author_id: author_id, follower_id: follower_id)
+
+  def create_follow!(author_id, follower_id) do
+    %Follow{}
+    |> Follow.changeset(%{author_id: author_id, follower_id: follower_id})
+    |> Repo.insert!()
+  end
+
+  def delete_follow!(author_id, follower_id) do
+    author_id
+    |> get_follow!(follower_id)
+    |> Repo.delete!()
   end
 end

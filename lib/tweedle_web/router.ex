@@ -37,9 +37,17 @@ defmodule TweedleWeb.Router do
 
       patch "/tweeds/:id", TweedController, :update
 
+      get "/followed_tweeds", TweedController, :index_followed
+
       get "/likes", LikeController, :index
 
       resources "/replies", ReplyController, only: [:update, :delete]
+
+      resources "/profiles/:profile_id/follows", FollowController,
+        only: [:create, :delete],
+        singleton: true
+
+      get "/followed_profiles", ProfileController, :index_followed
     end
   end
 end

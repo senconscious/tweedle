@@ -6,6 +6,7 @@ defmodule Tweedle.Tweeds do
   import Ecto.Query
 
   alias EctoJuno.Query.Sorting
+  alias Tweedle.Accounts.Follow
   alias Tweedle.Repo
   alias Tweedle.Tweeds.{Like, Tweed}
 
@@ -28,6 +29,15 @@ defmodule Tweedle.Tweeds do
     |> join(:inner, [t], tl in subquery(query), on: t.id == tl.tweed_id and is_nil(t.parent_id))
     |> Sorting.sort_query(Tweed, %{sort_direction: "desc"})
     |> select([t, tl], %{t | likes: tl.like_count})
+    |> Repo.all()
+  end
+
+  def list_followed_tweeds(follower_id) do
+    Tweed
+    |> join(:inner, [t], f in Follow,
+      on: t.author_id == f.author_id and f.follower_id == ^follower_id
+    )
+    |> Sorting.sort_query(Tweed, %{sort_direction: "desc"})
     |> Repo.all()
   end
 

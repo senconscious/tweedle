@@ -1,7 +1,8 @@
 defmodule TweedleWeb.User.TweedControllerTest do
   use TweedleWeb.ConnCase
 
-  import Tweedle.TweedsSetups, only: [create_tweed: 1]
+  import Tweedle.TweedsSetups, only: [create_tweed: 1, create_author_tweed: 1]
+  import Tweedle.AccountsSetups, only: [create_author: 1, create_follow: 1]
 
   alias Tweedle.TweedsFixtures
 
@@ -77,6 +78,45 @@ defmodule TweedleWeb.User.TweedControllerTest do
         delete(conn, path)
       end)
     end
+  end
+
+  describe "GET /followed_tweeds" do
+    setup :create_author
+    setup :create_author_tweed
+    setup :index_followed_path
+    setup :create_follow
+
+    @tag :skip_create_follow
+    @tag :skip_create_author_tweed
+    test "200 OK no followed users", %{conn: conn, path: path} do
+      conn = get(conn, path)
+
+      assert %{"data" => []} = json_response(conn, 200)
+    end
+
+    @tag :skip_create_author_tweed
+    test "200 OK followed user has no tweeds", %{conn: conn, path: path} do
+      conn = get(conn, path)
+
+      assert %{"data" => []} = json_response(conn, 200)
+    end
+
+    test "200 OK followed user with one tweed", %{
+      conn: conn,
+      path: path,
+      tweed_id: tweed_id,
+      author_id: author_id
+    } do
+      conn = get(conn, path)
+
+      assert %{"data" => data} = json_response(conn, 200)
+      refute data == []
+      assert [%{"id" => ^tweed_id, "author_id" => ^author_id} | []] = data
+    end
+  end
+
+  defp index_followed_path(%{conn: conn}) do
+    {:ok, path: path_fixture(conn, :index_followed)}
   end
 
   defp create_path(%{conn: conn}) do

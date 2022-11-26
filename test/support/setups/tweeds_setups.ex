@@ -30,6 +30,14 @@ defmodule Tweedle.TweedsSetups do
     {:ok, tweed_id: tweed_id, user_id: author_id}
   end
 
+  def create_author_tweed(%{skip_create_author_tweed: _}), do: :ok
+
+  def create_author_tweed(%{author_id: author_id}) do
+    %{id: tweed_id} = TweedsFixtures.tweed_fixture(%{author_id: author_id})
+
+    {:ok, tweed_id: tweed_id}
+  end
+
   def create_like(%{skip_create_like: _}), do: :ok
 
   def create_like(%{tweed_id: tweed_id, user_id: user_id}) do
