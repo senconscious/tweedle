@@ -19,7 +19,9 @@ defmodule TweedleWeb.Router do
       post "/sign_in", TokenController, :sign_in
 
       pipe_through :ensure_authorized_access
+
       post "/sign_out", TokenController, :sign_out
+      get "/profile", UserController, :show
     end
 
     resources "/tweeds", TweedController, only: [:index, :show]
