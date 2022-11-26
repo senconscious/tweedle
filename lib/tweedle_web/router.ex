@@ -25,6 +25,7 @@ defmodule TweedleWeb.Router do
     end
 
     resources "/tweeds", TweedController, only: [:index, :show]
+    resources "/profiles", ProfileController, only: [:index, :show]
 
     scope "/user", User, as: :user do
       pipe_through :ensure_authorized_access
